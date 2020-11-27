@@ -95,8 +95,8 @@ class OrdemServicoController extends Controller
     public function edit($id)
     {
         $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos', 'servicos')->where('id', $id)->get();
-        $servicos = Servico::all();
-        $produtos = Produto::all();
+        $servicos = Servico::all()->sortBy("id");
+        $produtos = Produto::all()->sortBy("id");
 
         if(!empty($ordem_servico_veiculos_mecanicos)){
             
@@ -151,14 +151,16 @@ class OrdemServicoController extends Controller
         //return json_encode($os_servico);
 
         if(count($os_servico)>0){
-            echo "servico ja adicionado";
+            return json_encode([]);
         } else{
             $descricao_problema =  $request->input('descricao_problema');
 
 
             $ordem_servico->servicos()->attach($servico_id, ['descricao_problema' => $descricao_problema]);
-    
-            return json_encode($ordem_servico);
+            
+            $servico = Servico::find($servico_id);
+
+            return json_encode($servico);
             
         }
     }

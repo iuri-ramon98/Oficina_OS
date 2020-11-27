@@ -162,7 +162,7 @@ function inadimplente() {
 //função para habilitar o botão inserir no form ordem.editar
 function habilitarBtnServico() {
     var valor_descricao = document.getElementById("descricao_servico").value;
-    console.log(valor_descricao);
+    //console.log(valor_descricao);
     if (valor_descricao.length > 0) {
         $("#btn_inserir_servico").removeAttr('disabled');
     }else{
@@ -196,9 +196,41 @@ function inserirServico(id) {
         dataType: "json",
         type: 'POST',
         success: function (response){
-            var response = JSON.parse(response);
-                console.log(response);
+            
+            console.log(response);
+            if((response.length) == 0){
+                alert("Serviço já adicionado");
+            }
+            else{
+                
+                console.log("adicionado");
+                $("#tabela_servicos>tbody").append(`
+                <tr>
+                    <td>${response['id']}</td>
+                    <td>${response['descricao']}</td>
+                    <td>${response['preco']}</td>
+                </tr>
+                `);
+            }
+                document.getElementById("servico_select").value = 0;
+                document.getElementById("descricao_servico").value = "";
+                
+               
         }
 
     });
 }
+
+
+function somarPreco() {
+    var precoTotal = 0;
+    $('#tabela_servicos>tbody tr').each(function() {
+        
+        precoTotal += parseFloat($(this).find("td").eq(2).html());  
+        //console.log(parseFloat($(this).find("td").eq(2).html()));
+        
+    });
+    document.getElementById("preco_servico").value = precoTotal;
+}
+
+

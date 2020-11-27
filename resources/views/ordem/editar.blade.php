@@ -5,7 +5,7 @@
 @section('content')
 
 
-<body>
+<body onload="somarPreco()">
     @if (!empty($ordem_servico_veiculos_mecanicos))
     <div class="corpoView"> 
     <div>
@@ -40,8 +40,7 @@
         <div class="col-md-6">
             <h3>Inserir Serviço</h3>
             <!--tranfsormar em ajax request (só voltar o botão e descomentar o post no script)-->
-            <form action="{{ route('ordemServico.updateServicoAjax', ['id' => $id_os]) }}" method="post">
-            @csrf
+            <!--<form action="{{ route('ordemServico.updateServicoAjax', ['id' => $id_os]) }}" method="post">-->
                 Serviços: <br>
             <select name="servico_id" id="servico_select" >
                 <option value="0" disabled selected>Selecione um serviço</option>
@@ -58,8 +57,8 @@
             <input type="text"  class="form-control form-control-descricao" name="descricao_problema" id="descricao_servico" onblur="habilitarBtnServico()">
             <br>
 
-            <input type="submit" value="Inserir">
-            <!--<button onclick="inserirServico({{ $id_os }})" class="btn" id="btn_inserir_servico" style="margin-top: 5px; margin-left: 300px; background-color:#55595c; color:white" disabled>Inserir</button>-->
+            <!--<input type="submit" value="Inserir">-->
+            <button onclick="inserirServico({{ $id_os }})" class="btn" id="btn_inserir_servico" style="margin-top: 5px; margin-left: 300px; background-color:#55595c; color:white" disabled>Inserir</button>
         </div>
         <div class="col-md-6">
             <h3>Inserir Produto</h3>
@@ -84,7 +83,7 @@
     <hr>
     <div class="row mb-2">
         <div class="col-md-6">
-            <table class="table" style="margin-right: 20px;">
+            <table class="table" style="margin-right: 20px;" id="tabela_servicos">
                 <thead class="thead-dark">
                   <tr>
                     <th scope="col">ID Serviço</th>
@@ -105,6 +104,8 @@
                 @endforeach
             </tbody>
               </table>
+              <br>
+              <input type="text" name="preco" id="preco_servico">
         </div>
     </div>
 @endsection
