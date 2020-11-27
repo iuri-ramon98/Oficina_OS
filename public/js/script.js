@@ -1,3 +1,9 @@
+$.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+
 //funções presentes no cliente.adicionar/editar.blade
 
 //trocar entre campos cpf e cnpj segundo opção da radio
@@ -39,7 +45,7 @@ $(document).ready(function () {
 
     $(".custo_input").maskMoney();
 
-    
+ 
 
     
 });
@@ -147,12 +153,52 @@ function inadimplente() {
   function preencherPreco() {
     var valores = document.getElementById("produto_select").value;
     var separar = valores.split(" ");
-
-    console.log(separar[1]);
-    $('#valor_produto').attr("value", separar[1]);
+    $('#valor_produto').val(separar[1]);
+    //$('#valor_produto').attr("value", separar[1]);
+    //console.log(separar[1]);
+    
   }
    
+//função para habilitar o botão inserir no form ordem.editar
+function habilitarBtnServico() {
+    var valor_descricao = document.getElementById("descricao_servico").value;
+    console.log(valor_descricao);
+    if (valor_descricao.length > 0) {
+        $("#btn_inserir_servico").removeAttr('disabled');
+    }else{
+        $("#btn_inserir_servico").attr('disabled', 'disabled');
+    }
+}
 
+
+function habilitarBtnProduto() {
+    var valor_input_produto = document.getElementById("valor_produto").value;
     
+    if (valor_input_produto.length > 0) {
+        $("#btn_inserir_produto").removeAttr('disabled');
+    }else{
+        $("#btn_inserir_produto").attr('disabled', 'disabled');
+    }
+}
 
 
+function inserirServico(id) { 
+    
+     dados = {
+        servico_id: $("#servico_select").val(),
+        descricao_problema: $("#descricao_servico").val()
+    };
+
+
+    $.ajax({
+        url: '/ordemServico/updateServicoAjax/' + id,
+        data: dados,
+        dataType: "json",
+        type: 'POST',
+        success: function (response){
+            var response = JSON.parse(response);
+                console.log(response);
+        }
+
+    });
+}

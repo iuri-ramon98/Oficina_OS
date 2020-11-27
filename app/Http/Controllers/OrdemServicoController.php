@@ -94,8 +94,7 @@ class OrdemServicoController extends Controller
      */
     public function edit($id)
     {
-        $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos')->where('id', $id)->get();
-        $os_servicos = OsServico::with('servicos')->where('ordem_servico_id' , $id)->get();
+        $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos', 'servicos')->where('id', $id)->get();
         $servicos = Servico::all();
         $produtos = Produto::all();
 
@@ -108,19 +107,20 @@ class OrdemServicoController extends Controller
 
             $cliente = Cliente::find($cliente_id_pesquisa);
 
-            //return $os_servicos->toJson();
+            //return $ordem_servico_veiculos_mecanicos->toJson();
             
             return view('ordem.editar', [
                  'ordem_servico_veiculos_mecanicos' => $ordem_servico_veiculos_mecanicos,
                  'cliente' => $cliente,
-                 'os_servicos' => $os_servicos,
                  'servicos' => $servicos,
-                 'produtos' => $produtos
+                 'produtos' => $produtos,
+                 'id_os' => $id
             ]);
         }else{
             return redirect()->route('ordemServico.index');
         }
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -130,6 +130,40 @@ class OrdemServicoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
+    {
+        //
+    }
+
+    public function updateServicoAjax(Request $request, $id)
+    {
+        /*$os_servico = new OsServico();
+        $os_servico->ordem_servico_id = $id;        
+        $os_servico->servico_id = $request->input('servico_id');
+        $os_servico->descricao_problema =  $request->input('descricao_problema');
+
+        $os_servico->save();*/
+
+        $ordem_servico = OrdemServico::find($id);
+        $servico_id = $request->input('servico_id');
+
+        $os_servico = OsServico::where('ordem_servico_id', $id)->where('servico_id', $servico_id)->get();
+
+        //return json_encode($os_servico);
+
+        if(count($os_servico)>0){
+            echo "servico ja adicionado";
+        } else{
+            $descricao_problema =  $request->input('descricao_problema');
+
+
+            $ordem_servico->servicos()->attach($servico_id, ['descricao_problema' => $descricao_problema]);
+    
+            return json_encode($ordem_servico);
+            
+        }
+    }
+
+    public function updateProdutoAjax(Request $request, $id)
     {
         //
     }

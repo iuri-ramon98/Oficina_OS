@@ -34,3 +34,7 @@ Route::post('veiculo/store/{id}', 'VeiculoController@storeWithId')->name('veicul
 Route::get('mecanico/show/{id}/{filter?}/', 'MecanicoController@showWithFilter')->name('mecanico.showWithFilter');
 
 Route::get('ordemServico/preencherVeiculo/{id}', 'OrdemServicoController@preencherVeiculo');
+
+Route::post('ordemServico/updateServicoAjax/{id}', 'OrdemServicoController@updateServicoAjax')->name('ordemServico.updateServicoAjax');
+
+Route::post('ordemServico/updateProdutoAjax/{id}', 'OrdemServicoController@updateProdutoAjax');

@@ -3,12 +3,7 @@
 	<head>
 		<title>@yield('title')</title> 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js\jquery-3.5.1.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js\jquery.mask.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js\jquery.maskMoney.min.js') }}"></script>
-    <script src="{{ asset('js/script.js') }}"></script>
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 	</head>
 	<body>
 <header>
@@ -42,6 +37,10 @@
 		Todos os direitos reservados
     </footer>
         
-
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js\jquery-3.5.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js\jquery.mask.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js\jquery.maskMoney.min.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
 	</body>
 </html>
