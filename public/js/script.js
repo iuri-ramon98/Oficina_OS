@@ -150,14 +150,14 @@ function inadimplente() {
 
   }
 
-  function preencherPreco() {
+  /*function preencherPreco() {
     var valores = document.getElementById("produto_select").value;
     var separar = valores.split(" ");
     $('#valor_produto').val(separar[1]);
     //$('#valor_produto').attr("value", separar[1]);
     //console.log(separar[1]);
     
-  }
+  }*/
    
 //função para habilitar o botão inserir no form ordem.editar
 function habilitarBtnServico() {
@@ -172,9 +172,9 @@ function habilitarBtnServico() {
 
 
 function habilitarBtnProduto() {
-    var valor_input_produto = document.getElementById("valor_produto").value;
+    var valor_input_produto = document.getElementById("quantidade").value;
     
-    if (valor_input_produto.length > 0) {
+    if (valor_input_produto > 0) {
         $("#btn_inserir_produto").removeAttr('disabled');
     }else{
         $("#btn_inserir_produto").attr('disabled', 'disabled');
@@ -209,28 +209,149 @@ function inserirServico(id) {
                     <td>${response['id']}</td>
                     <td>${response['descricao']}</td>
                     <td>${response['preco']}</td>
+                    <td><button class="btn btn-danger btn-remover" onclick="removerServico(${id}, ${dados['servico_id']})">Remover</button></td>
                 </tr>
                 `);
             }
                 document.getElementById("servico_select").value = 0;
                 document.getElementById("descricao_servico").value = "";
-                
+                $("#btn_inserir_servico").attr('disabled', 'disabled');
+                somarPreco();
                
         }
+        
+    });
+    
+}
 
+
+function inserirProduto(id) { 
+    
+    dados = {
+       produto_id: $("#produto_select").val(),
+       quantidade: $("#quantidade").val()
+   };
+
+
+   $.ajax({
+       url: '/ordemServico/updateProdutoAjax/' + id,
+       data: dados,
+       dataType: "json",
+       type: 'POST',
+       success: function (response){
+           
+           console.log(response);
+           if((response.length) == 0){
+               alert("Produto já adicionado");
+           }
+           else{
+               
+               console.log("adicionado");
+               $("#tabela_produtos>tbody").append(`
+               <tr>
+                   <td>${response['id']}</td>
+                   <td>${response['descricao']}</td>
+                   <td>${dados['quantidade']}</td>
+                   <td>${response['preco']}</td>
+                   <td><button class="btn btn-danger btn-remover" onclick="removerProduto(${id}, ${dados['produto_id']})">Remover</button></td>
+               </tr>
+               `);
+           }
+               document.getElementById("produto_select").value = 0;
+               document.getElementById("quantidade").value = "1";
+               $("#btn_inserir_produto").attr('disabled', 'disabled');
+               somarPreco();
+              
+       }
+       
+   });
+   
+}
+
+function removerServico(id_os, id_servico) {
+    $.ajax({
+        url: '/ordemServico/removerServicoAjax/' + id_os +'/' + id_servico,
+        type: 'POST',
+        success: function (response){
+            
+            console.log(response);
+
+                
+                console.log("removido");
+                linhas = $("#tabela_servicos>tbody>tr");
+                e = linhas.filter(function (i, elemento) {
+                    return elemento.cells[0].textContent == id_servico;
+                });
+                if(e){
+                    e.remove();
+                }else {
+                    alert("Item não adicionado");
+                }
+                
+
+
+                somarPreco();
+               
+        }
+        
     });
 }
 
 
+function removerProduto(id_os, id_produto) {
+    $.ajax({
+        url: '/ordemServico/removerProdutoAjax/' + id_os +'/' + id_produto,
+        type: 'POST',
+        success: function (response){
+            
+            console.log(response);
+
+                
+                console.log("removido");
+                linhas = $("#tabela_produtos>tbody>tr");
+                e = linhas.filter(function (i, elemento) {
+                    return elemento.cells[0].textContent == id_produto;
+                });
+                if(e){
+                    e.remove();
+                }else {
+                    alert("Item não adicionado");
+                }
+                
+
+
+                somarPreco();
+               
+        }
+        
+    });
+}
+
+
+
+
 function somarPreco() {
     var precoTotal = 0;
+    var precoServico = 0;
+    var precoProduto = 0;
+    
     $('#tabela_servicos>tbody tr').each(function() {
         
-        precoTotal += parseFloat($(this).find("td").eq(2).html());  
+        precoServico += parseFloat($(this).find("td").eq(2).html());  
         //console.log(parseFloat($(this).find("td").eq(2).html()));
         
     });
-    document.getElementById("preco_servico").value = precoTotal;
+    document.getElementById("preco_servico").value = precoServico;
+
+    $('#tabela_produtos>tbody tr').each(function() {
+        
+        precoProduto += (parseFloat($(this).find("td").eq(3).html()))*parseFloat($(this).find("td").eq(2).html());  
+        //console.log(parseFloat($(this).find("td").eq(2).html()));
+        
+    });
+    document.getElementById("preco_produto").value = precoProduto;
+
+    document.getElementById("preco").value = precoProduto + precoServico;
 }
 
 

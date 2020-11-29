@@ -17,6 +17,7 @@ class CreateOsProdutosTable extends Migration
 
             $table->integer('ordem_servico_id')->unsigned();
             $table->integer('produto_id')->unsigned();
+            $table->integer('quantidade')->unsigned();
             
             $table->foreign('ordem_servico_id')->references('id')->on('ordem_servicos')->onDelete('cascade');
             $table->foreign('produto_id')->references('id')->on('produtos')->onDelete('cascade');

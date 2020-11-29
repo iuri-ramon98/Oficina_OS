@@ -93,6 +93,11 @@ h5,
 h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
+  
+}
+
+h2{
+  margin-left: 35%;
 }
 
 p {
@@ -10976,3 +10981,6 @@ footer {
   text-align:center;
 }
 
+.btn-remover{
+  font-size: 7px;
+}

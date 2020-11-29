@@ -37,4 +37,8 @@ Route::get('ordemServico/preencherVeiculo/{id}', 'OrdemServicoController@preench
 
 Route::post('ordemServico/updateServicoAjax/{id}', 'OrdemServicoController@updateServicoAjax')->name('ordemServico.updateServicoAjax');
 
-Route::post('ordemServico/updateProdutoAjax/{id}', 'OrdemServicoController@updateProdutoAjax');
+Route::post('ordemServico/updateProdutoAjax/{id}', 'OrdemServicoController@updateProdutoAjax')->name('ordemServico.updateProdutoAjax');
+
+Route::post('/ordemServico/removerServicoAjax/{id_os}/{id_servico}', 'OrdemServicoController@removerServicoAjax');
+
+Route::post('/ordemServico/removerProdutoAjax/{id_os}/{id_produto}', 'OrdemServicoController@removerProdutoAjax');

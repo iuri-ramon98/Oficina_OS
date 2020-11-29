@@ -18,7 +18,7 @@ class ServicoSeeder extends Seeder
             'duracao' => '00:02:10'
             ]);
         DB::table('servicos')->insert([
-            'descricao' => 'Troca de Pneu', 
+            'descricao' => 'Troca de caixa de cambio', 
             'preco' => 211.50,
             'comissao' => 10,
             'duracao' => '00:02:10'

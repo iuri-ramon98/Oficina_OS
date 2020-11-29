@@ -24,7 +24,15 @@ class OrdemServicoController extends Controller
      */
     public function index()
     {
-        //
+        $ordem_servicos_veiculos = OrdemServico::with('veiculos')->orderBy('id')->get();
+        
+        $clientes = Cliente::all();
+
+        $clientes_json = $clientes->toJson();
+        $clientes_array =  (array) json_decode($clientes_json);
+
+
+        return view('ordem.index', ['clientes' => $clientes_array, 'ordem_servicos_veiculos' => $ordem_servicos_veiculos]);
     }
 
     /**
@@ -94,9 +102,10 @@ class OrdemServicoController extends Controller
      */
     public function edit($id)
     {
-        $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos', 'servicos')->where('id', $id)->get();
+        $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos', 'servicos', 'produtos')->where('id', $id)->get();
         $servicos = Servico::all()->sortBy("id");
         $produtos = Produto::all()->sortBy("id");
+        $os_produtos = OsProduto::where('ordem_servico_id', $id)->orderBy("produto_id")->get();
 
         if(!empty($ordem_servico_veiculos_mecanicos)){
             
@@ -106,15 +115,16 @@ class OrdemServicoController extends Controller
             
 
             $cliente = Cliente::find($cliente_id_pesquisa);
-
-            //return $ordem_servico_veiculos_mecanicos->toJson();
+            $os_produtos = $os_produtos->toJson();
+            $os_produtos_array =  (array) json_decode($os_produtos);
             
             return view('ordem.editar', [
                  'ordem_servico_veiculos_mecanicos' => $ordem_servico_veiculos_mecanicos,
                  'cliente' => $cliente,
                  'servicos' => $servicos,
                  'produtos' => $produtos,
-                 'id_os' => $id
+                 'id_os' => $id,
+                 'os_produtos_array' => $os_produtos_array
             ]);
         }else{
             return redirect()->route('ordemServico.index');
@@ -131,7 +141,16 @@ class OrdemServicoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+       
+        $ordem_servico = OrdemServico::find($id);
+       
+       if (isset($ordem_servico)) {
+        $dados['preco'] = $request->input('preco');
+
+        $ordem_servico->update($dados);
+        
+       }
+       return redirect()->route('ordemServico.index');
     }
 
     public function updateServicoAjax(Request $request, $id)
@@ -167,7 +186,45 @@ class OrdemServicoController extends Controller
 
     public function updateProdutoAjax(Request $request, $id)
     {
-        //
+        $ordem_servico = OrdemServico::find($id);
+        $produto_id = $request->input('produto_id');
+
+        $os_produto = OsProduto::where('ordem_servico_id', $id)->where('produto_id', $produto_id)->get();
+
+        //return json_encode($os_servico);
+
+        if(count($os_produto)>0){
+            return json_encode([]);
+        } else{
+            $quantidade =  $request->input('quantidade');
+
+
+            $ordem_servico->produtos()->attach($produto_id, ['quantidade' => $quantidade]);
+            
+            $produto = Produto::find($produto_id);
+
+            return json_encode($produto);
+        }
+    }
+
+    public function removerServicoAjax($id_os, $id_servico)
+    {
+        $ordem_servico = OrdemServico::find($id_os);
+        if(isset($ordem_servico)){
+            $ordem_servico->servicos()->detach($id_servico);
+        }
+
+        return json_encode("sucesso");
+    }
+
+    public function removerProdutoAjax($id_os, $id_produto)
+    {
+        $ordem_servico = OrdemServico::find($id_os);
+        if(isset($ordem_servico)){
+            $ordem_servico->produtos()->detach($id_produto);
+        }
+
+        return json_encode("sucesso");
     }
 
     /**
