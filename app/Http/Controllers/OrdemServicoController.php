@@ -91,7 +91,29 @@ class OrdemServicoController extends Controller
      */
     public function show($id)
     {
-        //
+        $ordem_servico_veiculos_mecanicos = OrdemServico::with('veiculos', 'mecanicos', 'servicos', 'produtos')->where('id', $id)->get();
+        $os_produtos = OsProduto::where('ordem_servico_id', $id)->orderBy("produto_id")->get();
+        
+        if(!empty($ordem_servico_veiculos_mecanicos)){
+            
+            foreach ($ordem_servico_veiculos_mecanicos as $item) {
+                $cliente_id_pesquisa = $item->veiculos->cliente_id;
+            }
+            $cliente = Cliente::find($cliente_id_pesquisa);
+
+            $os_produtos = $os_produtos->toJson();
+            $os_produtos_array =  (array) json_decode($os_produtos);
+
+
+            return view('ordem.show', [
+                'ordem_servico_veiculos_mecanicos' => $ordem_servico_veiculos_mecanicos,
+                'cliente' => $cliente,
+                'id_os' => $id,
+                'os_produtos_array' => $os_produtos_array
+            ]);
+        }else{
+            return redirect()->route('ordemServico.index');
+        }
     }
 
     /**
@@ -112,9 +134,8 @@ class OrdemServicoController extends Controller
             foreach ($ordem_servico_veiculos_mecanicos as $item) {
                 $cliente_id_pesquisa = $item->veiculos->cliente_id;
             }
-            
-
             $cliente = Cliente::find($cliente_id_pesquisa);
+
             $os_produtos = $os_produtos->toJson();
             $os_produtos_array =  (array) json_decode($os_produtos);
             
@@ -225,6 +246,20 @@ class OrdemServicoController extends Controller
         }
 
         return json_encode("sucesso");
+    }
+
+    public function mudarStatus($id_os, $novo_status)
+    {
+        $ordem_servico = OrdemServico::find($id_os);
+
+        
+        if ((isset($ordem_servico)) && ($novo_status >= 2) && (($novo_status <= 3))) {
+            $dados['status'] = $novo_status;
+            $ordem_servico->update($dados);
+            return redirect()->route('ordemServico.show', ['ordemServico' => $id_os]);
+        } else{
+            return redirect()->route('ordemServico.index');
+        }
     }
 
     /**

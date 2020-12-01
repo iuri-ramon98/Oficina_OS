@@ -11,7 +11,7 @@
     <div>
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-dark rounded" style="margin-right: 3px">
                     <div class="lh-100">
-                    <h2 class="mb-0 text-white lh-100">Adicionar produtos e serviços</h2>     
+                    <h3 class="mb-0 text-white lh-100" style="white-space: nowrap;">Adicionar produtos e serviços</h3>     
         </div>
     </div>
     @foreach ($ordem_servico_veiculos_mecanicos as $item)
@@ -153,11 +153,11 @@
     <div class="row mb-2">
       <div class="col-md-6">
         Valor dos Serviços (R$):
-        <input type="text" name="preco_servico" id="preco_servico">
+        <input type="text" name="preco_servico" id="preco_servico" readonly>
       </div>
       <div class="col-md-6">
         Valor dos Produtos (R$):
-        <input type="text" name="preco_produto" id="preco_produto">
+        <input type="text" name="preco_produto" id="preco_produto" readonly>
       </div>
     </div>
     <hr>

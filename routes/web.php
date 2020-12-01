@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'OrdemServicoController@index');
 
 Route::resource('cliente', 'ClienteController');
 Route::resource('mecanico', 'MecanicoController');
@@ -42,3 +40,5 @@ Route::post('ordemServico/updateProdutoAjax/{id}', 'OrdemServicoController@updat
 Route::post('/ordemServico/removerServicoAjax/{id_os}/{id_servico}', 'OrdemServicoController@removerServicoAjax');
 
 Route::post('/ordemServico/removerProdutoAjax/{id_os}/{id_produto}', 'OrdemServicoController@removerProdutoAjax');
+
+Route::get('/ordemServico/mudarStatus/{id_os}/{novo_status}', 'OrdemServicoController@mudarStatus')->name('ordemServico.mudarStatus');

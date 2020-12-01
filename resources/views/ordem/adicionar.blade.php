@@ -11,7 +11,7 @@
     <div>
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-dark rounded" style="margin-right: 3px">
                     <div class="lh-100">
-                    <h2 class="mb-0 text-white lh-100">Adicionar Ordem de serviço</h2>     
+                    <h3 class="mb-0 text-white lh-100" style="white-space: nowrap;">Adicionar Ordem de serviço</h3>     
         </div>
     </div>
     <div  class="bg-warning" id="message" hidden>O cliente selecionado está inadimplente!!</div> 

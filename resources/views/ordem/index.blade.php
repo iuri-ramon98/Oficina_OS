@@ -10,9 +10,9 @@
     <div>
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-dark rounded" style="margin-right: 3px">
             <div class="lh-100">
-            <h2 class="mb-0 text-white lh-100">Ordens de serviço</h2>      
+            <h3 class="mb-0 text-white lh-100" style= "white-space: nowrap;">Ordens de serviço</h2>      
         </div>
-    <button class="btn" style="margin-top: 5px; margin-left: 485px; background-color:#55595c; color:white"><a href="{{ route('ordemServico.create') }}" style="color:white">Adicionar nova OS</a></button>
+    <button class="btn" style="margin-top: 5px; margin-left: 400px; background-color:#55595c; color:white; white-space: nowrap;"><a href="{{ route('ordemServico.create') }}" style="color:white">Adicionar nova OS</a></button>
     </div>
         @foreach ($ordem_servicos_veiculos as $item)
             <div class="col-md-12">
@@ -49,7 +49,7 @@
                         <svg class="bd-placeholder-img" width="200" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail">
                             <title>Ações</title>
                             <rect width="100%" height="100%" fill="#55595c"/>
-                        <a href="#"><text x="5%" y="30%" fill="#eceeef" dy=".3em">- Consultar/Alterar Situação</text></a>
+                        <a href="{{route('ordemServico.show', ['ordemServico'=>$item->id])}}"><text x="5%" y="30%" fill="#eceeef" dy=".3em">- Consultar/Alterar Situação</text></a>
                         <a href="{{route('ordemServico.edit', ['ordemServico'=>$item->id])}}"><text x="2%" y="60%" fill="#eceeef" dy=".3em">- Adicionar/Remover produtos e serviços</text></a>
                         
                         </svg>

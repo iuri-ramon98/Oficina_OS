@@ -1,121 +1,142 @@
 @extends('layouts.principal')
 
-@section('title', 'Cliente')
+@section('title', 'OS')
 
 
 @section('content')
-<body onload="manterFiltro({{ $filter }})">
+<body onload="somarPreco()">
       
 
     <div class="corpoView"> 
-            @if (!empty($cliente))
+            @if (!empty($ordem_servico_veiculos_mecanicos))
+            @foreach ($ordem_servico_veiculos_mecanicos as $item)
+            
         <div>
             <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-dark rounded" style="margin-right: 3px">
-                        <div class="lh-100">
-                        <h2 class="mb-0 text-white lh-100">Cliente: {{ $cliente->id }}</h2>     
-            </div>
-            <button class="btn" style="margin-top: 5px; margin-left: 520px; background-color:#55595c; color:white"><a href="{{ route('cliente.edit', ['cliente' => $cliente->id]) }}" style="color:white">Editar cliente</a></button>
+                  <h4 class="mb-0 text-white lh-100" style= "white-space: nowrap;">Ordem de serviço: {{ $item->id }}</h4>     
+      
+            <button class="btn" style="margin-top: 5px; margin-left: 320px; background-color:#55595c; color:white"><a href="{{ route('ordemServico.edit', ['ordemServico' => $item->id]) }}" style="color:white">Editar</a></button>
+            <button class="btn" style="margin-top: 5px; margin-left: 10px; background-color:#cc0707; color:white"><a href="{{ route('ordemServico.mudarStatus', ['id_os'=> $item->id, 'novo_status' => 3 ]) }}" style="color:white">Cancelar</a></button>
+            <button class="btn" style="margin-top: 5px; margin-left: 10px; background-color:#028539; color:white"><a href="{{ route('ordemServico.mudarStatus', ['id_os'=> $item->id, 'novo_status' => 2 ]) }}" style="color:white">Finalizar</a></button>
         </div>
-        @if ($cliente->flag_inadimplente)
-        <div class="card  text-white bg-danger">
-            <div class="card-body">
-            Este cliente está inadimplente! Entre em editar para mudar a situação
-            </div>
-        </div><br/>
-        @endif  
 
-            Nome:<br/>
-            <input type="text" class="form-control form-control-name" name="nome" value="{{ $cliente->nome }}" readonly/>
-            <br>    
+        @switch($item->status)
+        @case(1)
+        Situação: <br>
+        <input type="text" class="form-control form-control-date" name="situacao" value="Pendente" readonly>
+            @break
+        @case(2)
+        Situação: <br>
+        <input type="text" class="form-control form-control-date" name="situacao" value="Finalizada" readonly>
+            @break
+        @case(3)
+        Situação: <br>
+        <input type="text" class="form-control form-control-date" name="situacao" value="Cancelada" readonly>
+            @break
+        @default   
+    @endswitch
+    <br>
 
-            Data de nascimento
-            <input type="date" class="form-control form-control-date" name="data_nascimento" value="{{ $cliente->data_nascimento }}" readonly>
-            <br>    
+        Descricão:<br/>
+    <input type="text" class="form-control form-control-descricao" name="descricao" value="{{ $item->obs }}" readonly/>
+    <br>    
 
-            @if (strlen($cliente->cpf_cnpj)==14)
-                CPF:<br/>
-                <input type="text" class="form-control form-control-name cpf_input" name="cpf_cnpj" value="{{ $cliente->cpf_cnpj }}" readonly/>
-                <br>    
-            @else
-                CNPJ:<br/>
-                <input type="text" class="form-control form-control-name cpf_input" name="cpf_cnpj" value="{{ $cliente->cpf_cnpj }}" readonly/>
-                <br>          
-            @endif
-            Telefone:<br>
-            <input type="text" class="form-control form-control-name telefone_input" name="telefone" value="{{ $cliente->telefone }}" readonly>
-            <br>
-            Celular:<br>
-            <input type="text" class="form-control form-control-name celular_input" name="celular" value="{{ $cliente->celular }}" readonly>
-            <br>
-            Endereço:<br>
-            <input type="text" class="form-control form-control-descricao endereco_input" name="endereco" value="{{ $cliente->endereco }}" readonly>
-            <br>
-            Cidade:<br>
-            <input type="text" class="form-control form-control-date cidade_input" name="cidade" value="{{ $cliente->cidade }}" readonly>
-            <br>
-    @endif
-
-
-    @if (!empty($ordem_servicos_veiculos))
-
+    Cliente: <br>
+    <input type="text" class="form-control form-control-name" name="cliente_nome" value="{{ $cliente->nome }}" readonly>
+    <br>   
     
+    Veículo: <br>
+    <input type="text" class="form-control form-control-date" name="veiculo_modelo" value="{{ $item->veiculos->modelo }}" readonly>
+    <br>   
 
+    Mecânico: <br>
+    <input type="text" class="form-control form-control-name" name="mecanico_nome" value="{{ $item->mecanicos->nome }}" readonly>
+    <br>   
+    <hr>
+        @endforeach
 
-    <div class="card">
-      <h5 class="card-header">Filtrar OS do cliente por:</h5>
-      <div class="card-body">
-        <form method="GET" action=" {{ route('cliente.showWithFilter', ['id' => $cliente->id]) }} ">
+        <div class="row mb-2">
+          <div class="col-md-6">
+              <h2>Serviços</h2>
+              <table class="table" style="margin-right: 20px; text-align: center" id="tabela_servicos">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Descriçao</th>
+                      <th scope="col">Preço</th>
+                      
             
-          <input type="radio" name="filtro" class="radio" value="" id="todas" style="margin-top: 5px; margin-left: 20px;">  Mostrar todas 
-          <input type="radio" name="filtro" class="radio" value="1" id="pendentes" style="margin-top: 5px; margin-left: 80px;">  Pendentes 
-          <input type="radio" name="filtro" class="radio" value="2" id="finalizadas" style="margin-top: 5px; margin-left: 80px;">  Finalizadas 
-          <input type="radio" name="filtro" class="radio" value="3" id="canceladas" style="margin-top: 5px; margin-left: 80px;">  Canceladas 
-          <input type="submit" class="btn btn-secondary" style="margin-top: 5px; margin-left: 40px;" value="Filtrar">
-          
-        </form>
-      </div>
-    </div><br>
-
-    
-
-    
-    <table class="table" style="margin-right: 20px;">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">ID OS</th>
-          <th scope="col">Descricao</th>
-          <th scope="col">Veículo</th>
-          <th scope="col">Status</th>
-          <th scope="col-sm-auto">Iniciada em:</th>
-
-        </tr>
-      </thead>
-      <tbody>
-        @foreach ($ordem_servicos_veiculos as $item)
-            <tr>
-              <td>{{ $item->id }}</td>
-              <td>{{ $item->obs }}</td>
-              <td>{{ $item->veiculos->modelo }}</td>
-              @switch($item->status)
-                  @case(1)
-                  <td>Pendente</td>
-                      @break
-                  @case(2)
-                  <td>Finalizada</td>
-                      @break
-                  @case(3)
-                  <td>Cancelada</td>
-                      @break
-                  @default   
-              @endswitch
-              <td>{{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$item->inicio)->format('d/m/Y  H:i') }}h</td>     
-            </tr>
-          </tbody>
-      @endforeach
-    </table>
-    @endif
-    <a href="{{ route('cliente.index') }}"><button class="btn" style="margin-top: 5px; margin-left: 700px; background-color:#55595c; color:white">Sair</button></a>
-    </div>
-
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($ordem_servico_veiculos_mecanicos as $os_servicos)
+                    @foreach ($os_servicos->servicos as $item)
+                    <tr>
+                      <td>{{ $item->id }}</td>
+                      <td>{{ $item->descricao }}</td>
+                      <td>{{ $item->preco }}</td>
+                      
+                    </tr>
+                    @endforeach
+                  @endforeach
+              </tbody>
+                </table>
+                <br>
+  
+          </div>
+          <div class="col-md-6">
+              <h2>Produtos</h2>
+              <table class="table" style="margin-right: 30px; text-align: center" id="tabela_produtos">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Descriçao</th>
+                      <th scope="col">Quantidade</th>
+                      <th scope="col">Preço</th>
+                      
+            
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($ordem_servico_veiculos_mecanicos as $os_produtos)
+                    @foreach ($os_produtos->produtos as $item)
+                    <tr>
+                      <td>{{ $item->id }}</td>
+                      <td>{{ $item->descricao }}</td>
+                      @for ($i = 0; $i < count($os_produtos_array); $i++)
+                          @if (($os_produtos_array[$i]->produto_id) == ($item->id))
+                          <td>{{ $os_produtos_array[$i]->quantidade }}</td>
+                          @endif
+                      @endfor
+                      <td>{{ $item->preco }}</td>
+                    </tr>
+                    @endforeach
+                  @endforeach
+              </tbody>
+                </table>
+          </div>
+        </div>
+        <hr>
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    Valor dos Serviços (R$):
+                    <input type="text" name="preco_servico" id="preco_servico" readonly>
+                  </div>
+                  <div class="col-md-6">
+                    Valor dos Produtos (R$):
+                    <input type="text" name="preco_produto" id="preco_produto" readonly>
+                  </div>
+                </div>
+                <hr>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                    Valor Total (R$):
+                    <input type="text" name="preco" id="preco" readonly>
+                  </div>
+                  <div class="col-md-6">
+                  <a href="{{route('ordemServico.index')}}"><button class="btn" style="margin-left: 300px; background-color:#55595c; color:white">Voltar</button></a>
+                  </div>
+                </div>
+        @endif
 </body>
 @endsection
